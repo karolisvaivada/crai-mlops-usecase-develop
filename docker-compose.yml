@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  churn-api:
+    build: .
+    container_name: churn-api
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_PATH: models/churn_model.pkl
+      PREPROCESS_PATH: models/preprocessing.pkl
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
