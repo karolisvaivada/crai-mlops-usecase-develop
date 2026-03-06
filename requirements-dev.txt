@@ -1,0 +1,2 @@
+#For security checks
+safety==3.0.1
