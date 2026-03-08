@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import List
 
 class CustomerInput(BaseModel):
     age: int
@@ -23,3 +23,6 @@ class CustomerInput(BaseModel):
     tech_support: str
     streaming_tv: str
     streaming_movies: str
+
+class BatchCustomerInput(BaseModel):
+    customers: List[CustomerInput]
