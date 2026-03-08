@@ -22,7 +22,10 @@ The solution includes:
 │   ├── main.py
 │   └── models.py
 ├── models/                 # Trained model artifacts
+<<<<<<< HEAD
 ├── config/                 #configuration
+=======
+>>>>>>> ad76193c7fb8a41eb4c74b4e3b8598c4ca11e1c4
 ├── tests/                  # Automated tests
 ├── train_model.py          # Model training script
 ├── customer_churn_dataset.csv

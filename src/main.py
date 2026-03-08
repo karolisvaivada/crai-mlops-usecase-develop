@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from src.models import CustomerInput
 import pickle
 import pandas as pd
+from src.models import CustomerInput, BatchCustomerInput
 import os
 
 app = FastAPI(title="Customer Churn Prediction API")
@@ -40,41 +41,39 @@ def readiness():
     return {"status": "ready"}
 
 
-@app.post("/predict")
-def predict(customer: CustomerInput):
-
+@app.post("/batch-predict")
+def batch_predict(batch: BatchCustomerInput):
     if model is None or preprocessing is None:
         raise HTTPException(status_code=503, detail="Model not ready")
 
-    # Convert input to dictionary
-    input_dict = customer.dict()
+    results = []
 
-    # Create DataFrame
-    input_df = pd.DataFrame([input_dict])
+    for customer in batch.customers:
+        input_dict = customer.dict()
+        input_df = pd.DataFrame([input_dict])
 
-    # Ensure all expected columns exist
-    for col in preprocessing["feature_columns"]:
-        if col not in input_df.columns:
-            input_df[col] = 0
+        for col in preprocessing["feature_columns"]:
+            if col not in input_df.columns:
+                input_df[col] = 0
 
-    # Reorder columns exactly as training
-    input_df = input_df[preprocessing["feature_columns"]]
+        input_df = input_df[preprocessing["feature_columns"]]
 
-    # Encode categorical features
-    for col in preprocessing["categorical_cols"]:
-        le = preprocessing["label_encoders"][col]
-        input_df[col] = le.transform(input_df[col])
+        for col in preprocessing["categorical_cols"]:
+            le = preprocessing["label_encoders"][col]
+            input_df[col] = le.transform(input_df[col])
 
-    # Scale numerical features
-    input_df[preprocessing["numerical_cols"]] = preprocessing["scaler"].transform(
-        input_df[preprocessing["numerical_cols"]]
-    )
+        input_df[preprocessing["numerical_cols"]] = preprocessing["scaler"].transform(
+            input_df[preprocessing["numerical_cols"]]
+        )
 
-    # Predict
-    prediction = model.predict(input_df)[0]
-    probability = model.predict_proba(input_df)[0][1]
+        prediction = model.predict(input_df)[0]
+        probability = model.predict_proba(input_df)[0][1]
 
-    return {
-        "prediction": int(prediction),
-        "probability": float(probability)
-    }
+        results.append(
+            {
+                "prediction": int(prediction),
+                "probability": float(probability)
+            }
+        )
+
+    return {"results": results}
