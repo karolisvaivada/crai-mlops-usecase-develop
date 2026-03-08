@@ -22,7 +22,6 @@ The solution includes:
 │   ├── main.py
 │   └── models.py
 ├── models/                 # Trained model artifacts
-<<<<<<< HEAD
 ├── config/                 #configuration
 ├── tests/                  # Automated tests
 ├── train_model.py          # Model training script
