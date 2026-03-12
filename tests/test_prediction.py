@@ -37,3 +37,14 @@ def test_predict_invalid():
     with TestClient(app) as client:
         response = client.post("/predict", json={"age": 45})
         assert response.status_code == 422
+
+def test_batch_predict_valid():
+    batch_payload = {
+        "customers": [valid_payload, valid_payload]
+    }
+
+    with TestClient(app) as client:
+        response = client.post("/batch-predict", json=batch_payload)
+        assert response.status_code == 200
+        assert "results" in response.json()
+        assert len(response.json()["results"]) == 2
