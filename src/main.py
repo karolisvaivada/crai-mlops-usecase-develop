@@ -40,6 +40,35 @@ def readiness():
         raise HTTPException(status_code=503, detail="Model not ready")
     return {"status": "ready"}
 
+@app.post("/predict")
+def predict(customer: CustomerInput):
+    if model is None or preprocessing is None:
+        raise HTTPException(status_code=503, detail="Model not ready")
+
+    input_dict = customer.dict()
+    input_df = pd.DataFrame([input_dict])
+
+    for col in preprocessing["feature_columns"]:
+        if col not in input_df.columns:
+            input_df[col] = 0
+
+    input_df = input_df[preprocessing["feature_columns"]]
+
+    for col in preprocessing["categorical_cols"]:
+        le = preprocessing["label_encoders"][col]
+        input_df[col] = le.transform(input_df[col])
+
+    input_df[preprocessing["numerical_cols"]] = preprocessing["scaler"].transform(
+        input_df[preprocessing["numerical_cols"]]
+    )
+
+    prediction = model.predict(input_df)[0]
+    probability = model.predict_proba(input_df)[0][1]
+
+    return {
+        "prediction": int(prediction),
+        "probability": float(probability)
+    }
 
 @app.post("/batch-predict")
 def batch_predict(batch: BatchCustomerInput):

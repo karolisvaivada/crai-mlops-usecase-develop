@@ -22,7 +22,7 @@ The solution includes:
 │   ├── main.py
 │   └── models.py
 ├── models/                 # Trained model artifacts
-├── config/                 #configuration
+├── config/                 # Configuration
 ├── tests/                  # Automated tests
 ├── train_model.py          # Model training script
 ├── customer_churn_dataset.csv
@@ -124,6 +124,7 @@ GET `/readiness`
 
 ### Predict
 POST `/predict`
+POST `/batch-predict`
 
 Example request body:
 
@@ -152,7 +153,36 @@ Example request body:
   "streaming_movies": "Yes"
 }
 ```
-
+Batch request body:
+```json
+{
+  "customers": [
+    {
+      "age": 45,
+      "gender": "Male",
+      "tenure_months": 24,
+      "monthly_charges": 79.5,
+      "total_charges": 1900.0,
+      "contract_type": "Month-to-month",
+      "payment_method": "Electronic check",
+      "paperless_billing": "Yes",
+      "num_support_tickets": 1,
+      "num_logins_last_month": 12,
+      "feature_usage_score": 65.5,
+      "late_payments": 0,
+      "partner": "Yes",
+      "dependents": "No",
+      "internet_service": "Fiber optic",
+      "online_security": "No",
+      "online_backup": "Yes",
+      "device_protection": "No",
+      "tech_support": "No",
+      "streaming_tv": "Yes",
+      "streaming_movies": "Yes"
+    }
+  ]
+}
+```
 ---
 
 ## 5️⃣ Running Tests
